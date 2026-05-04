@@ -19,6 +19,13 @@ public class UISettings : MonoBehaviour
         sliderSfx.onValueChanged.AddListener(ChangeSfxVolume);
         sliderUi.onValueChanged.AddListener(ChangeUiVolume);
     }
+    private void Start()
+    {
+        LoadVolume("VolumeMaster", sliderMaster);
+        LoadVolume("VolumeMusic", sliderMusic);
+        LoadVolume("VolumeSfx", sliderSfx);
+        LoadVolume("VolumeUI", sliderUi);
+    }
     private void OnDestroy()
     {
         sliderMaster.onValueChanged.RemoveAllListeners();
@@ -27,21 +34,31 @@ public class UISettings : MonoBehaviour
         sliderUi.onValueChanged.RemoveAllListeners();
     }
 
+    void LoadVolume(string key, Slider slider)
+    {
+        float vol = PlayerPrefs.GetFloat(key, 0);
+        slider.value = vol;
+        mixer.SetFloat(key, vol);
+    }
     private void ChangeMasterVolume(float currentValue)
     {
         mixer.SetFloat("VolumeMaster", currentValue);
+        PlayerPrefs.SetFloat("VolumeMaster", currentValue);
     }
     private void ChangeMusicVolume(float currentValue)
     {
         mixer.SetFloat("VolumeMusic", currentValue);
+        PlayerPrefs.SetFloat("VolumeMusic", currentValue);
     }
     private void ChangeSfxVolume(float currentValue)
     {
         mixer.SetFloat("VolumeSfx", currentValue);
+        PlayerPrefs.SetFloat("VolumeSfx", currentValue);
     }
     private void ChangeUiVolume(float currentValue)
     {
-        mixer.SetFloat("VolumeUi", currentValue);
+        mixer.SetFloat("VolumeUI", currentValue);
+        PlayerPrefs.SetFloat("VolumeUI", currentValue);
     }
 
 }
