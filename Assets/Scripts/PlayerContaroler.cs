@@ -1,11 +1,21 @@
 using UnityEngine;
+using UnityEngine.Rendering.Universal;
 
 public class PlayerContaroler : MonoBehaviour
 {
     [SerializeField] private GameObject blockPrefab;
     private GameObject block = null;
 
+    [SerializeField] private float speed = 10;
+    [SerializeField] Transform floor;
+    private Bounds area;
+
     private void Awake()
+    {
+        area = floor.GetComponent<Renderer>().bounds;
+    }
+
+    private void Start()
     {
         GenerateBlock();
     }
@@ -14,6 +24,7 @@ public class PlayerContaroler : MonoBehaviour
     {
         GenerateBlock();
         DropBlock();
+        Movement();
     }
     private void DropBlock()
     {
@@ -35,5 +46,20 @@ public class PlayerContaroler : MonoBehaviour
             block.GetComponent<Collider>().enabled = false;
         }
         
+    }
+
+    private void Movement()
+    {
+        float x = transform.position.x + speed * Time.deltaTime;
+        x = Mathf.Clamp(x, area.min.x, area.max.x);
+        transform.position = new Vector3(x, transform.position.y, transform.position.z);
+        if (ReachesBorderLimit())
+        {
+            speed *= -1.0f;
+        }
+    }
+    private bool ReachesBorderLimit()
+    {
+        return Mathf.Approximately(transform.position.x, area.min.x) || Mathf.Approximately(transform.position.x, area.max.x);
     }
 }
