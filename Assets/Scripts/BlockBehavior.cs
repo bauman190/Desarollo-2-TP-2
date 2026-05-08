@@ -1,9 +1,13 @@
 using UnityEngine;
+using System;
 
 [RequireComponent(typeof(Rigidbody))]
 public class BlockBehavior : MonoBehaviour
 {
     private Rigidbody rb;
+    public static event Action OnPerfectPlacement;
+    public static event Action<float> OnImperfectPlacement;
+    public static event Action BlockPlaced;
 
     private void Awake()
     {
@@ -25,6 +29,7 @@ public class BlockBehavior : MonoBehaviour
                 rb.useGravity = false;
                 CalculateOffCenter(collision);
                 transform.SetParent(collision.transform.parent);
+                BlockPlaced?.Invoke();
             }
         } 
     }
@@ -37,10 +42,11 @@ public class BlockBehavior : MonoBehaviour
             Vector3 newPosition = transform.position;
             newPosition.x = collision.transform.position.x;
             transform.position = newPosition;
+            OnPerfectPlacement?.Invoke();
         }
         else
         {
-            //Debug.Log("Corrido en X por: " + distance);
+            OnImperfectPlacement?.Invoke(distance);
         }
     }
 }
