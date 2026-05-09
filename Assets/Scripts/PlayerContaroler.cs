@@ -18,6 +18,7 @@ public class PlayerContaroler : MonoBehaviour
     private void Start()
     {
         GenerateBlock();
+        BlockBehavior.BlockPlaced += RaisePlayer;
     }
 
     private void Update()
@@ -62,4 +63,14 @@ public class PlayerContaroler : MonoBehaviour
     {
         return Mathf.Approximately(transform.position.x, area.min.x) || Mathf.Approximately(transform.position.x, area.max.x);
     }
+
+    private void RaisePlayer()
+    {
+        float blockHeight = blockPrefab.GetComponent<Renderer>().bounds.size.y;
+
+        transform.position += Vector3.up * blockHeight;
+    }
+
 }
+
+
