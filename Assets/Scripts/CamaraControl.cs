@@ -3,20 +3,21 @@ using UnityEngine;
 public class CamaraControl : MonoBehaviour
 {
     [SerializeField] private GameObject blockPrefab;
+    //private float upDistance = 1f;
     private void Start()
     {
-        BlockBehavior.BlockPlaced += RaiseCamera;
+        TowerBehavior.BlockPlaced += RaiseCamera;
     }
 
     private void OnDestroy()
     {
-        BlockBehavior.BlockPlaced -= RaiseCamera;
+        TowerBehavior.BlockPlaced -= RaiseCamera;
     }
 
     private void RaiseCamera()
     {
         float blockHeight = blockPrefab.GetComponent<Renderer>().bounds.size.y;
 
-        transform.position += Vector3.up * blockHeight;
+        transform.position += Vector3.up * 0.7f;
     }
 }

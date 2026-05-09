@@ -1,57 +1,87 @@
+using System.Collections.Generic;
 using UnityEngine;
+using System;
 
 public class TowerBehavior : MonoBehaviour
 {
+    [SerializeField] private PlayerContaroler player;
+
     [SerializeField] private float maxOffset = 2f;
     [SerializeField] private float maxWobble = 15f;
     [SerializeField] private float wobbleSpeed = 2f;
     [SerializeField] private float wobbleReduction = 10f;
     private float wobbleAmount;
-    private int blocksCount = 0;
+    private List<BlockBehavior> blocksInTower = new List<BlockBehavior>();
 
-    void Start()
-    {
-        BlockBehavior.OnImperfectPlacement += CalculateWobble;
-        BlockBehavior.OnPerfectPlacement += ApplayWobbleReduction;
-        BlockBehavior.BlockPlaced += IncreaseBlockCount;
-    }
-    
-    void Update()
-    {
-        float angle =
-        Mathf.Sin(Time.time * wobbleSpeed) * wobbleAmount;
+    public static event Action BlockPlaced;
 
-        transform.rotation =
-            Quaternion.Euler(0f, 0f, angle);
+    private BlockBehavior nextBlock = null;
+
+    private void Start()
+    { 
+        player.BlockGenerated += GetNextBlock;
     }
 
-    void OnDestroy()
+    private void Update()
     {
-        BlockBehavior.OnImperfectPlacement -= CalculateWobble;
-        BlockBehavior.OnPerfectPlacement -= ApplayWobbleReduction;
-        BlockBehavior.BlockPlaced -= IncreaseBlockCount;
+        float angle = Mathf.Sin(Time.time * wobbleSpeed) * wobbleAmount;
+
+        transform.rotation = Quaternion.Euler(0f, 0f, angle);
+    }
+
+    private void OnDestroy()
+    {
+        
     }
 
     private void CalculateWobble(float distance)
     {
-        if (blocksCount > 0)
+        if (blocksInTower.Count > 0)
         {
             float t = Mathf.Clamp01(distance / maxOffset);
 
             wobbleAmount += t * maxWobble;
         }
     }
+
     private void ApplayWobbleReduction()
     {
-        if (blocksCount > 0)
+        if (blocksInTower.Count > 0)
         { 
             wobbleAmount -= wobbleReduction;
 
             wobbleAmount = Mathf.Max(wobbleAmount, 0f);
         }
     }
-    private void IncreaseBlockCount()
+
+    private void AddBlock(GameObject objetoChocado)
     {
-        blocksCount++;
+        if(blocksInTower.Count > 0)
+        {
+
+        }
+        blocksInTower.Add(nextBlock);
+        nextBlock.OnImperfectPlacement -= CalculateWobble;
+        nextBlock.OnPerfectPlacement -= ApplayWobbleReduction;
+        nextBlock.BlockCollided -= AddBlock;
+        BlockPlaced?.Invoke();
     }
+
+    private BlockBehavior GetLastBlock()
+    {
+        if (blocksInTower.Count > 0)
+        {
+            return blocksInTower[blocksInTower.Count - 1];
+        }
+        return null;
+    }
+
+    private void GetNextBlock(BlockBehavior block)
+    {
+        nextBlock = block;
+        nextBlock.OnImperfectPlacement += CalculateWobble;
+        nextBlock.OnPerfectPlacement += ApplayWobbleReduction;
+        nextBlock.BlockCollided += AddBlock;
+    }
+
 }

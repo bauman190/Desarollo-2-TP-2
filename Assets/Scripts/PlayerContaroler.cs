@@ -1,5 +1,5 @@
 using UnityEngine;
-using UnityEngine.Rendering.Universal;
+using System;
 
 public class PlayerContaroler : MonoBehaviour
 {
@@ -10,6 +10,8 @@ public class PlayerContaroler : MonoBehaviour
     [SerializeField] Transform floor;
     private Bounds area;
 
+    public event Action <BlockBehavior> BlockGenerated;
+
     private void Awake()
     {
         area = floor.GetComponent<Renderer>().bounds;
@@ -18,8 +20,8 @@ public class PlayerContaroler : MonoBehaviour
     private void Start()
     {
         GenerateBlock();
-        BlockBehavior.BlockPlaced += RaisePlayer;
-        BlockBehavior.BlockPlaced += GenerateBlock;
+        TowerBehavior.BlockPlaced += RaisePlayer;
+        TowerBehavior.BlockPlaced += GenerateBlock;
     }
 
     private void Update()
@@ -30,8 +32,8 @@ public class PlayerContaroler : MonoBehaviour
 
     private void OnDestroy()
     {
-        BlockBehavior.BlockPlaced -= RaisePlayer;
-        BlockBehavior.BlockPlaced -= GenerateBlock;
+        TowerBehavior.BlockPlaced -= RaisePlayer;
+        TowerBehavior.BlockPlaced -= GenerateBlock;
     }
     private void DropBlock()
     {
@@ -49,6 +51,8 @@ public class PlayerContaroler : MonoBehaviour
         if (block == null)
         {
             block = Instantiate(blockPrefab, transform.position, Quaternion.identity, this.transform);
+            BlockBehavior newBlock = block.GetComponent<BlockBehavior>();
+            BlockGenerated?.Invoke(newBlock);
         }
         
     }
@@ -72,7 +76,7 @@ public class PlayerContaroler : MonoBehaviour
     {
         float blockHeight = blockPrefab.GetComponent<Renderer>().bounds.size.y;
 
-        transform.position += Vector3.up * blockHeight;
+        transform.position += Vector3.up * 0.7f;
     }
 
 }

@@ -5,9 +5,9 @@ using System;
 public class BlockBehavior : MonoBehaviour
 {
     private Rigidbody rb;
-    public static event Action OnPerfectPlacement;
-    public static event Action<float> OnImperfectPlacement;
-    public static event Action BlockPlaced;
+    public event Action OnPerfectPlacement;
+    public event Action<float> OnImperfectPlacement;
+    public  event Action <GameObject> BlockCollided;
 
     private void Awake()
     {
@@ -24,12 +24,11 @@ public class BlockBehavior : MonoBehaviour
             {
                 rb.constraints = RigidbodyConstraints.FreezeAll;
                 rb.freezeRotation = true;
-                rb.angularVelocity = Vector3.zero;
                 rb.isKinematic = true;
                 rb.useGravity = false;
                 CalculateOffCenter(collision);
                 transform.SetParent(collision.transform.parent);
-                BlockPlaced?.Invoke();
+                BlockCollided?.Invoke(collision.gameObject);
             }
         } 
     }
