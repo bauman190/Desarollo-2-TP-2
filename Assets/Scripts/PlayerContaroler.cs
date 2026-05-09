@@ -19,13 +19,19 @@ public class PlayerContaroler : MonoBehaviour
     {
         GenerateBlock();
         BlockBehavior.BlockPlaced += RaisePlayer;
+        BlockBehavior.BlockPlaced += GenerateBlock;
     }
 
     private void Update()
     {
-        GenerateBlock();
         DropBlock();
         Movement();
+    }
+
+    private void OnDestroy()
+    {
+        BlockBehavior.BlockPlaced -= RaisePlayer;
+        BlockBehavior.BlockPlaced -= GenerateBlock;
     }
     private void DropBlock()
     {
