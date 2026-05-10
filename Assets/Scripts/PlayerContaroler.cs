@@ -37,7 +37,7 @@ public class PlayerContaroler : MonoBehaviour
     }
     private void DropBlock()
     {
-        if (Input.GetKeyDown(KeyCode.Space))
+        if (Input.GetKeyDown(KeyCode.Space) && block != null)
         {
             block.transform.SetParent(null);
             Rigidbody blockRigidbody = block.GetComponent<Rigidbody>();
