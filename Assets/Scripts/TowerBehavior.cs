@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using System;
+using UnityEngine.SceneManagement;
 
 public class TowerBehavior : MonoBehaviour
 {
@@ -17,6 +18,9 @@ public class TowerBehavior : MonoBehaviour
 
     private BlockBehavior nextBlock = null;
 
+    public event Action GameOver;
+
+    private bool gameOver = false;
     private void Start()
     { 
         player.BlockGenerated += GetNextBlock;
@@ -27,6 +31,9 @@ public class TowerBehavior : MonoBehaviour
         float angle = Mathf.Sin(Time.time * wobbleSpeed) * wobbleAmount;
 
         transform.rotation = Quaternion.Euler(0f, 0f, angle);
+
+        if (!gameOver && MissedLastBlock())
+            GameOver?.Invoke();
     }
 
     private void OnDestroy()
@@ -54,26 +61,42 @@ public class TowerBehavior : MonoBehaviour
         }
     }
 
-    private void AddBlock(GameObject objetoChocado)
+    private void AddBlock(BlockBehavior objetoChocado)
     {
-        if(blocksInTower.Count > 0)
+        if (CollitionWithLastBlock(objetoChocado) && blocksInTower.Count > 0)
         {
-
+            GameOver?.Invoke();
         }
-        blocksInTower.Add(nextBlock);
-        nextBlock.OnImperfectPlacement -= CalculateWobble;
-        nextBlock.OnPerfectPlacement -= ApplayWobbleReduction;
-        nextBlock.BlockCollided -= AddBlock;
-        BlockPlaced?.Invoke();
+        else
+        {
+            blocksInTower.Add(nextBlock);
+            nextBlock.OnImperfectPlacement -= CalculateWobble;
+            nextBlock.OnPerfectPlacement -= ApplayWobbleReduction;
+            nextBlock.BlockCollided -= AddBlock;
+            BlockPlaced?.Invoke();
+        }
     }
 
-    private BlockBehavior GetLastBlock()
+    private bool CollitionWithLastBlock(BlockBehavior objetoChocado)
     {
-        if (blocksInTower.Count > 0)
+        if (blocksInTower.Count == 0)
+            return false;
+
+        return objetoChocado != blocksInTower[^1];
+    }
+
+    private bool MissedLastBlock()
+    {
+        if (blocksInTower.Count == 0)
+            return false;
+
+        if (nextBlock.transform.position.y < blocksInTower[^1].transform.position.y)
         {
-            return blocksInTower[blocksInTower.Count - 1];
+            gameOver = true;
+            return true;
         }
-        return null;
+
+        return false;
     }
 
     private void GetNextBlock(BlockBehavior block)

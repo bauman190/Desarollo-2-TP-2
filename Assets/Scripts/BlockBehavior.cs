@@ -7,7 +7,7 @@ public class BlockBehavior : MonoBehaviour
     private Rigidbody rb;
     public event Action OnPerfectPlacement;
     public event Action<float> OnImperfectPlacement;
-    public  event Action <GameObject> BlockCollided;
+    public  event Action <BlockBehavior> BlockCollided;
 
     private void Awake()
     {
@@ -28,7 +28,7 @@ public class BlockBehavior : MonoBehaviour
                 rb.useGravity = false;
                 CalculateOffCenter(collision);
                 transform.SetParent(collision.transform.parent);
-                BlockCollided?.Invoke(collision.gameObject);
+                BlockCollided?.Invoke(collision.gameObject.GetComponent<BlockBehavior>());
             }
         } 
     }

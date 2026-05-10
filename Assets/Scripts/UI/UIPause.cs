@@ -48,6 +48,7 @@ public class UIPause : MonoBehaviour
     }
     private void OnButtonMainMenuClicked()
     {
+        Time.timeScale = 1f;
         SceneManager.LoadScene("MainMenu");
     }
     private void OnButtonSettingsBackClicked()
