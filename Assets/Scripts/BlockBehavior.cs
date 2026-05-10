@@ -8,10 +8,12 @@ public class BlockBehavior : MonoBehaviour
     public event Action OnPerfectPlacement;
     public event Action<float> OnImperfectPlacement;
     public  event Action <BlockBehavior> BlockCollided;
+    private AudioSource audioSource;
 
     private void Awake()
     {
         rb = GetComponent<Rigidbody>();
+        audioSource = GetComponent<AudioSource>();
     }
     
     private void OnCollisionEnter(Collision collision)
@@ -28,6 +30,7 @@ public class BlockBehavior : MonoBehaviour
                 rb.useGravity = false;
                 CalculateOffCenter(collision);
                 transform.SetParent(collision.transform.parent);
+                audioSource.Play();
                 BlockCollided?.Invoke(collision.gameObject.GetComponent<BlockBehavior>());
             }
         } 
