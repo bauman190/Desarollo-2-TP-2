@@ -1,4 +1,4 @@
-\# Tower Stack Game
+# Tower Stack Game
 
 
 
@@ -6,35 +6,35 @@ A simple Unity game where you stack blocks to build the tallest tower possible.
 
 
 
-\## Features
+## Features
 
 
 
-\- Block stacking gameplay
+- Block stacking gameplay
 
-\- Score and high score system
+- Score and high score system
 
-\- Dynamic camera movement
+- Dynamic camera movement
 
-\- Sound effects
+- Sound effects
 
-\- Background music
+- Background music
 
-\- Simple arcade mechanics
-
-
-
-\## Technologies
+- Simple arcade mechanics
 
 
 
-\- Unity
-
-\- C#
+## Technologies
 
 
 
-\## Controls
+- Unity
+
+- C#
+
+
+
+## Controls
 
 
 
@@ -48,15 +48,15 @@ A simple Unity game where you stack blocks to build the tallest tower possible.
 
 
 
-\##3D Models
+##3D Models
 
 
 
-\[3D Models](https://assetstore.unity.com/packages/3d/environments/modular-building-kit-273019)
+[3D Models](https://assetstore.unity.com/packages/3d/environments/modular-building-kit-273019)
 
 
 
-\## Music
+## Music
 
 
 
@@ -64,7 +64,7 @@ Daniel Porchetto
 
 
 
-\## Author
+## Author
 
 
 
