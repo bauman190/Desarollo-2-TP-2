@@ -1,7 +1,6 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
-using System;
-using UnityEngine.SceneManagement;
 
 public class TowerBehavior : MonoBehaviour
 {
@@ -18,12 +17,22 @@ public class TowerBehavior : MonoBehaviour
 
     private BlockBehavior nextBlock = null;
 
+    private float maxPoints = 100;
+    private float minPoints = 10;
+    private float score = 0;
+    private float maxScore;
+    private int streak = 0;
+
     public event Action GameOver;
 
+    public event Action<float, float, int, int> UpdateScore;
     private bool gameOver = false;
+
     private void Start()
     { 
         player.BlockGenerated += GetNextBlock;
+        maxScore = PlayerPrefs.GetFloat("MaxScore", 0);
+        UpdateScore?.Invoke(score, maxScore, streak, blocksInTower.Count);
     }
 
     private void Update()
@@ -32,13 +41,18 @@ public class TowerBehavior : MonoBehaviour
 
         transform.rotation = Quaternion.Euler(0f, 0f, angle);
 
+        UpdateMaxScore();
+
         if (!gameOver && MissedLastBlock())
+        {
+            UpdateMaxScore();
             GameOver?.Invoke();
+        }
     }
 
     private void OnDestroy()
     {
-        
+        player.BlockGenerated -= GetNextBlock;
     }
 
     private void CalculateWobble(float distance)
@@ -48,6 +62,8 @@ public class TowerBehavior : MonoBehaviour
             float t = Mathf.Clamp01(distance / maxOffset);
 
             wobbleAmount += t * maxWobble;
+            streak = 0;
+            IncreaseScore(distance);
         }
     }
 
@@ -58,6 +74,8 @@ public class TowerBehavior : MonoBehaviour
             wobbleAmount -= wobbleReduction;
 
             wobbleAmount = Mathf.Max(wobbleAmount, 0f);
+            streak++;
+            IncreaseScore(0);
         }
     }
 
@@ -65,6 +83,7 @@ public class TowerBehavior : MonoBehaviour
     {
         if (CollitionWithLastBlock(objetoChocado) && blocksInTower.Count > 0)
         {
+            UpdateMaxScore();
             GameOver?.Invoke();
         }
         else
@@ -73,6 +92,7 @@ public class TowerBehavior : MonoBehaviour
             nextBlock.OnImperfectPlacement -= CalculateWobble;
             nextBlock.OnPerfectPlacement -= ApplayWobbleReduction;
             nextBlock.BlockCollided -= AddBlock;
+            UpdateScore?.Invoke(score, maxScore, streak, blocksInTower.Count);
             BlockPlaced?.Invoke();
         }
     }
@@ -107,4 +127,27 @@ public class TowerBehavior : MonoBehaviour
         nextBlock.BlockCollided += AddBlock;
     }
 
+    private void UpdateMaxScore()
+    {
+        if(score > maxScore)
+        {
+            maxScore = score;
+            PlayerPrefs.SetFloat("MaxScore", maxScore);
+        }
+    }
+   
+    private void IncreaseScore(float distance)
+    {
+        if (distance > 0)
+        {
+            float maxDistance = 1f;
+            float normalized = Mathf.Clamp01(distance / maxDistance);
+
+            score += Mathf.RoundToInt(Mathf.Lerp(maxPoints, minPoints, normalized));
+        }
+        else
+        {
+            score += maxPoints * 2;
+        }
+    }
 }
