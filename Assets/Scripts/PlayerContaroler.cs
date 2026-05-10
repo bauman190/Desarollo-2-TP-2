@@ -76,7 +76,7 @@ public class PlayerContaroler : MonoBehaviour
     {
         float blockHeight = blockPrefab.GetComponent<Renderer>().bounds.size.y;
 
-        transform.position += Vector3.up * 0.7f;
+        transform.position += Vector3.up * 1f;
     }
 
 }
