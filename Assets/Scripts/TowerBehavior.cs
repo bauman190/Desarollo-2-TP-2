@@ -6,11 +6,15 @@ public class TowerBehavior : MonoBehaviour
 {
     [SerializeField] private PlayerContaroler player;
 
-    [SerializeField] private float maxOffset = 2f;
+    /*[SerializeField] private float maxOffset = 2f;
     [SerializeField] private float maxWobble = 15f;
     [SerializeField] private float wobbleSpeed = 2f;
     [SerializeField] private float wobbleReduction = 10f;
-    private float wobbleAmount;
+    private float wobbleAmount;*/
+
+    public event Action<float> OnImperfectPlacementDetected;
+    public event Action OnPerfectPlacementDetected;
+
     private List<BlockBehavior> blocksInTower = new List<BlockBehavior>();
 
     public static event Action BlockPlaced;
@@ -37,9 +41,6 @@ public class TowerBehavior : MonoBehaviour
 
     private void Update()
     {
-        float angle = Mathf.Sin(Time.time * wobbleSpeed) * wobbleAmount;
-
-        transform.rotation = Quaternion.Euler(0f, 0f, angle);
 
         UpdateMaxScore();
 
@@ -59,9 +60,7 @@ public class TowerBehavior : MonoBehaviour
     {
         if (blocksInTower.Count > 0)
         {
-            float t = Mathf.Clamp01(distance / maxOffset);
-
-            wobbleAmount += t * maxWobble;
+            OnImperfectPlacementDetected.Invoke(distance);
             streak = 0;
             IncreaseScore(distance);
         }
@@ -70,10 +69,8 @@ public class TowerBehavior : MonoBehaviour
     private void ApplayWobbleReduction()
     {
         if (blocksInTower.Count > 0)
-        { 
-            wobbleAmount -= wobbleReduction;
-
-            wobbleAmount = Mathf.Max(wobbleAmount, 0f);
+        {
+            OnPerfectPlacementDetected.Invoke();
             streak++;
             IncreaseScore(0);
         }

@@ -18,8 +18,6 @@ public class BlockBehavior : MonoBehaviour
     
     private void OnCollisionEnter(Collision collision)
     {
-        if (collision.gameObject.GetComponent<BlockBehavior>() != null) 
-        {
             Vector3 normal = collision.contacts[0].normal;
             float dotUP = Vector3.Dot(normal, Vector3.up);
             if (dotUP > 0.9f)
@@ -32,8 +30,7 @@ public class BlockBehavior : MonoBehaviour
                 transform.SetParent(collision.transform.parent);
                 audioSource.Play();
                 BlockCollided?.Invoke(collision.gameObject.GetComponent<BlockBehavior>());
-            }
-        } 
+            }   
     }
 
     private void CalculateOffCenter(Collision collision)
