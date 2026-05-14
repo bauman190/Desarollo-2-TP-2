@@ -1,19 +1,22 @@
 using UnityEngine;
 
+[RequireComponent(typeof(Rigidbody))]
 public class TowerWobble : MonoBehaviour
 {
-    [SerializeField] private float maxOffset = 2f;
-    [SerializeField] private float maxWobble = 15f;
-    [SerializeField] private float wobbleSpeed = 2f;
-    [SerializeField] private float wobbleReduction = 10f;
+    
+    [SerializeField] private float sensitivity = 2f; 
+    [SerializeField] private float returnForce = 1f;
 
-    private float wobbleAmount;
-
+    private Rigidbody rb;
+    private float currentWobbleIntensity;
     private TowerBehavior towerMainLogic;
 
     private void Awake()
     {
+        rb = GetComponent<Rigidbody>();
         towerMainLogic = GetComponentInParent<TowerBehavior>();
+        rb.angularDamping = 2f;
+        rb.centerOfMass = new Vector3(0, -1f, 0);
     }
 
     private void Start()
@@ -22,26 +25,40 @@ public class TowerWobble : MonoBehaviour
         towerMainLogic.OnPerfectPlacementDetected += ReduceWobble;
     }
 
+    private void FixedUpdate()
+    {
+        float angleZ = transform.localEulerAngles.z;
+        if (angleZ > 180)
+        {
+            angleZ -= 360;
+        }
+
+        
+        rb.AddTorque(Vector3.forward * -angleZ * returnForce, ForceMode.Acceleration);
+
+        
+        if (currentWobbleIntensity > 0.01f)
+        {
+            float sideForce = Mathf.Sin(Time.time * 3f) * currentWobbleIntensity;
+            rb.AddTorque(Vector3.forward * sideForce, ForceMode.Acceleration);
+        }
+    }
+
     private void OnDestroy()
     {
         towerMainLogic.OnImperfectPlacementDetected -= AddWobble;
         towerMainLogic.OnPerfectPlacementDetected -= ReduceWobble;
     }
-    private void Update()
-    {
-        float angle = Mathf.Sin(Time.time * wobbleSpeed) * wobbleAmount;
-        transform.localRotation = Quaternion.Euler(0f, 0f, angle);
-    }
+   
 
     private void AddWobble(float distance)
     {
-        float t = Mathf.Clamp01(distance / maxOffset);
-        wobbleAmount += t * maxWobble;
+        currentWobbleIntensity += (distance * sensitivity);
     }
 
     private void ReduceWobble()
     {
-        wobbleAmount -= wobbleReduction;
-        wobbleAmount = Mathf.Max(wobbleAmount, 0f);
+        currentWobbleIntensity *= 0.2f; 
+        rb.angularVelocity *= 0.5f;
     }
 }
