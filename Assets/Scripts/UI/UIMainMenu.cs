@@ -25,6 +25,13 @@ public class UIMainMenu : MonoBehaviour
         buttonCreditsBack.onClick.AddListener(OnButtonCreditsBackClicked);
     }
 
+    private void Start()
+    {
+#if UNITY_WEBGL
+        buttonExit.gameObject.SetActive(false);
+#endif
+    }
+
     private void OnDestroy()
     {
         buttonPlay.onClick.RemoveAllListeners();
@@ -72,7 +79,7 @@ public class UIMainMenu : MonoBehaviour
     }
     private void OnButtonExitClicked()
     {
-#if UNITY_EDITOR 
+#if UNITY_EDITOR
         UnityEditor.EditorApplication.isPlaying = false;
 #else
          Application.Quit(0);
