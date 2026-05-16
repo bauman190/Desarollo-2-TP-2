@@ -1,4 +1,5 @@
 using UnityEngine;
+using System;
 
 [RequireComponent(typeof(Rigidbody))]
 public class TowerWobble : MonoBehaviour
@@ -6,6 +7,9 @@ public class TowerWobble : MonoBehaviour
     
     [SerializeField] private float sensitivity = 2f; 
     [SerializeField] private float returnForce = 1f;
+
+    [SerializeField] private float limitAngle = 35f;
+    public event Action OnTowerCollapsed;
 
     private Rigidbody rb;
     private float currentWobbleIntensity;
@@ -33,6 +37,10 @@ public class TowerWobble : MonoBehaviour
             angleZ -= 360;
         }
 
+        if (Math.Abs(angleZ) >= limitAngle)
+        {
+            OnTowerCollapsed?.Invoke();
+        }
         
         rb.AddTorque(Vector3.forward * -angleZ * returnForce, ForceMode.Acceleration);
 

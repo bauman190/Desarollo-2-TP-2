@@ -6,12 +6,6 @@ public class TowerBehavior : MonoBehaviour
 {
     [SerializeField] private PlayerContaroler player;
 
-    /*[SerializeField] private float maxOffset = 2f;
-    [SerializeField] private float maxWobble = 15f;
-    [SerializeField] private float wobbleSpeed = 2f;
-    [SerializeField] private float wobbleReduction = 10f;
-    private float wobbleAmount;*/
-
     public event Action<float> OnImperfectPlacementDetected;
     public event Action OnPerfectPlacementDetected;
 
@@ -32,9 +26,16 @@ public class TowerBehavior : MonoBehaviour
     public event Action<float, float, int, int> UpdateScore;
     private bool gameOver = false;
 
+    private TowerWobble towerWobble;
+
+    private void Awake()
+    {
+        towerWobble = GetComponentInChildren<TowerWobble>();
+    }
     private void Start()
     { 
         player.BlockGenerated += GetNextBlock;
+        towerWobble.OnTowerCollapsed += HandleTowerColaps;
         maxScore = PlayerPrefs.GetFloat("MaxScore", 0);
         UpdateScore?.Invoke(score, maxScore, streak, blocksInTower.Count);
     }
@@ -146,5 +147,10 @@ public class TowerBehavior : MonoBehaviour
         {
             score += maxPoints * 2;
         }
+    }
+
+    private void HandleTowerColaps()
+    {
+        GameOver?.Invoke();
     }
 }
