@@ -28,7 +28,11 @@ public class BlockBehavior : MonoBehaviour
                 rb.useGravity = false;
                 CalculateOffCenter(collision);
                 transform.SetParent(collision.transform.parent);
-                audioSource.Play();
+                if (audioSource != null)
+                {
+                    audioSource.Play();
+                    Destroy(audioSource, audioSource.clip.length);
+                }
                 BlockCollided?.Invoke(collision.gameObject.GetComponent<BlockBehavior>());
             }   
     }

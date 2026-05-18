@@ -11,6 +11,9 @@ public class PlayerContaroler : MonoBehaviour
     private Bounds area;
 
     public event Action <BlockBehavior> BlockGenerated;
+    [SerializeField] private TowerBehavior towerBehavior;
+
+    private bool gameOver = false;
 
     private void Awake()
     {
@@ -22,6 +25,7 @@ public class PlayerContaroler : MonoBehaviour
         GenerateBlock();
         TowerBehavior.BlockPlaced += RaisePlayer;
         TowerBehavior.BlockPlaced += GenerateBlock;
+        TowerBehavior.GameOver += blockInPut;
     }
 
     private void Update()
@@ -34,10 +38,11 @@ public class PlayerContaroler : MonoBehaviour
     {
         TowerBehavior.BlockPlaced -= RaisePlayer;
         TowerBehavior.BlockPlaced -= GenerateBlock;
+        TowerBehavior.GameOver -= blockInPut;
     }
     private void DropBlock()
     {
-        if (Input.GetKeyDown(KeyCode.Space) && block != null)
+        if (Input.GetKeyDown(KeyCode.Space) && block != null && !gameOver)
         {
             block.transform.SetParent(null);
             Rigidbody blockRigidbody = block.GetComponent<Rigidbody>();
@@ -79,6 +84,10 @@ public class PlayerContaroler : MonoBehaviour
         transform.position += Vector3.up * 1f;
     }
 
+    private void blockInPut()
+    {
+        gameOver = true;
+    }
 }
 
 

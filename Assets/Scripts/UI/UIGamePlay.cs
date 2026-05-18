@@ -17,7 +17,7 @@ public class UIGamePlay : MonoBehaviour
 
     private void Awake()
     {
-        tower.GameOver += GameOverSceen;
+        TowerBehavior.GameOver += GameOverSceen;
         tower.UpdateScore += UpdateUI;
     }
 
@@ -32,7 +32,6 @@ public class UIGamePlay : MonoBehaviour
 
     private void GameOverSceen()
     {
-        Time.timeScale = 0;
         SetPanel(panelGameOver, true);
         Cursor.lockState = CursorLockMode.None;
         Cursor.visible = true;

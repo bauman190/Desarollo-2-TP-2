@@ -8,7 +8,7 @@ public class TowerWobble : MonoBehaviour
     [SerializeField] private float sensitivity = 2f; 
     [SerializeField] private float returnForce = 1f;
 
-    [SerializeField] private float limitAngle = 35f;
+    [SerializeField] private float limitAngle = 10f;
     public event Action OnTowerCollapsed;
 
     private Rigidbody rb;
@@ -31,16 +31,20 @@ public class TowerWobble : MonoBehaviour
 
     private void FixedUpdate()
     {
-        float angleZ = transform.localEulerAngles.z;
+        float angleZ = transform.eulerAngles.z;
         if (angleZ > 180)
         {
             angleZ -= 360;
         }
 
-        if (Math.Abs(angleZ) >= limitAngle)
+        float inclinacionActualMundo = Vector3.Angle(Vector3.up, transform.up);
+        
+        if (inclinacionActualMundo >= limitAngle)
         {
             OnTowerCollapsed?.Invoke();
+            return;
         }
+
         
         rb.AddTorque(Vector3.forward * -angleZ * returnForce, ForceMode.Acceleration);
 

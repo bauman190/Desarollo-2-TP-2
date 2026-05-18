@@ -1,6 +1,8 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.InputSystem.LowLevel;
 
 public class TowerBehavior : MonoBehaviour
 {
@@ -21,7 +23,7 @@ public class TowerBehavior : MonoBehaviour
     private float maxScore;
     private int streak = 0;
 
-    public event Action GameOver;
+    public static event Action GameOver;
 
     public event Action<float, float, int, int> UpdateScore;
     private bool gameOver = false;
@@ -151,6 +153,17 @@ public class TowerBehavior : MonoBehaviour
 
     private void HandleTowerColaps()
     {
+        int indiceInicio = Mathf.Max(0, blocksInTower.Count - 3);
+        for (int i = indiceInicio; i < blocksInTower.Count; i++)
+        {
+            blocksInTower[i].transform.SetParent(null);
+            Rigidbody blockRB = blocksInTower[i].GetComponent<Rigidbody>();
+            blockRB.constraints = RigidbodyConstraints.None;
+            blockRB.freezeRotation = false;
+            blockRB.isKinematic = false;
+            blockRB.useGravity = true;
+        }
+
         GameOver?.Invoke();
     }
 }
