@@ -13,7 +13,7 @@ public class UIPause : MonoBehaviour
     [SerializeField] private CanvasGroup panelSettings;
 
     private bool isPause = false;
-    private bool gameOver = false;
+    
 
     private void Awake()
     {
@@ -21,18 +21,17 @@ public class UIPause : MonoBehaviour
         buttonSettings.onClick.AddListener(OnButtonSettingsClicked);
         buttonMainMenu.onClick.AddListener(OnButtonMainMenuClicked);
         buttonSettingsBack.onClick.AddListener(OnButtonSettingsBackClicked);
-        TowerBehavior.GameOver += blockPause;
+        
     }
 
     private void Update()
     {
-        if(!gameOver)
-        { 
+        
         if (Input.GetKeyDown(KeyCode.P) || Input.GetKeyDown(KeyCode.Escape))
         {
             TogglePause();
         }
-        }
+        
     }
 
     private void OnDestroy()
@@ -40,7 +39,7 @@ public class UIPause : MonoBehaviour
         buttonResume.onClick.RemoveAllListeners();
         buttonSettings.onClick.RemoveAllListeners();
         buttonMainMenu.onClick.RemoveAllListeners();
-        TowerBehavior.GameOver -= blockPause;
+      
     }
 
     private void OnButtonResumeClicked()
@@ -78,8 +77,4 @@ public class UIPause : MonoBehaviour
         Cursor.visible = isPause;
     }
 
-    private void blockPause()
-    {
-        gameOver = true;
-    }
 }

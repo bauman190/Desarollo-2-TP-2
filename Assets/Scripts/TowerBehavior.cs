@@ -23,7 +23,7 @@ public class TowerBehavior : MonoBehaviour
     private float maxScore;
     private int streak = 0;
 
-    public static event Action GameOver;
+    public event Action GameOver;
 
     public event Action<float, float, int, int> UpdateScore;
     private bool gameOver = false;

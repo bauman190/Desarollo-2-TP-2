@@ -17,7 +17,7 @@ public class UIGamePlay : MonoBehaviour
 
     private void Awake()
     {
-        TowerBehavior.GameOver += GameOverSceen;
+        tower.GameOver += GameOverSceen;
         tower.UpdateScore += UpdateUI;
     }
 
